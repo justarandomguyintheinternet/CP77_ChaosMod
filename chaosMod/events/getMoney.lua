@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "I like money"
     o.settings = {
         active = true,
-        duration = 7.5,
+        duration = 5,
         chanceMultiplier = 10,
         maxMoney = 3333,
         minMoney = 1

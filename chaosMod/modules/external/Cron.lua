@@ -7,7 +7,7 @@ Copyright (c) 2021 psiberx
 
 local Cron = {}
 
-local timers = { version = '1.0.1' }
+Cron.timers = { version = '1.0.1' }
 local counter = 0
 
 --@param timeout number
@@ -72,7 +72,7 @@ local function addTimer(timeout, recurring, callback, args)
 		args.Resume = Cron.Resume
 	end
 
-	table.insert(timers, timer)
+	table.insert(Cron.timers, timer)
 
 	return timer.id
 end
@@ -99,9 +99,9 @@ function Cron.Halt(timerId)
 		timerId = timerId.id
 	end
 
-	for i, timer in ipairs(timers) do
+	for i, timer in ipairs(Cron.timers) do
 		if timer.id == timerId then
-			table.remove(timers, i)
+			table.remove(Cron.timers, i)
 			break
 		end
 	end
@@ -114,7 +114,7 @@ function Cron.Pause(timerId)
 		timerId = timerId.id
 	end
 
-	for _, timer in ipairs(timers) do
+	for _, timer in ipairs(Cron.timers) do
 		if timer.id == timerId then
 			timer.active = false
 			break
@@ -129,7 +129,7 @@ function Cron.Resume(timerId)
 		timerId = timerId.id
 	end
 
-	for _, timer in ipairs(timers) do
+	for _, timer in ipairs(Cron.timers) do
 		if timer.id == timerId then
 			timer.active = true
 			break
@@ -140,8 +140,8 @@ end
 --@param delta number
 --@return void
 function Cron.Update(delta)
-	if #timers > 0 then
-		for i, timer in ipairs(timers) do
+	if #Cron.timers > 0 then
+		for i, timer in ipairs(Cron.timers) do
 			if timer.active then
 				timer.delay = timer.delay - delta
 
@@ -149,7 +149,7 @@ function Cron.Update(delta)
 					if timer.recurring then
 						timer.delay = timer.delay + timer.timeout
 					else
-						table.remove(timers, i)
+						table.remove(Cron.timers, i)
 						i = i - 1
 					end
 

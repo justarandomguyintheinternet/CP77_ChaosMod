@@ -72,8 +72,17 @@ function miscUtils.getRandomEvent(cM)
     local keys = {}
     for k, v in pairs(cM.events) do
         if v.settings.active then
-            for var=1,v.settings.chanceMultiplier do
-                table.insert(keys, k)
+            for _, e in pairs(cM.runtimeData.activeEvents) do
+                if not (v.name == e.name) then
+                    for var=1,v.settings.chanceMultiplier do
+                        table.insert(keys, k)
+                    end
+                end
+            end
+            if #cM.runtimeData.activeEvents == 0 then
+                for var=1,v.settings.chanceMultiplier do
+                    table.insert(keys, k)
+                end
             end
         end
     end
@@ -84,7 +93,17 @@ end
 function miscUtils.anyActiveEvent(cM)
     local any = false
     for _, v in pairs(cM.events) do
-       if v.settings.active == true then any = true end
+        if v.settings.active == true then
+            local running = false
+            for _, e in pairs(cM.runtimeData.activeEvents) do
+                if (v.name == e.name) then
+                    running = true
+                end      
+            end
+            if not running then
+                any = true
+            end
+        end
     end
     return any
 end

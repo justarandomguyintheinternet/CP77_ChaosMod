@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "Blinding Lights"
     o.settings = {
         active = true,
-        duration = 0,
+        duration = 75,
         chanceMultiplier = 10,
         strength = 5000,
         deactivate = true

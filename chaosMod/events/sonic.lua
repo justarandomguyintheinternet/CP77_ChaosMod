@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "Sanic the hedgefond"
     o.settings = {
         active = true,
-        duration = 7.5,
+        duration = 15,
         chanceMultiplier = 10,
         speed = 10
     }

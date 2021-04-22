@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "Boop"
     o.settings = {
         active = true,
-        duration = 0,
+        duration = 75,
         chanceMultiplier = 10
     }
 

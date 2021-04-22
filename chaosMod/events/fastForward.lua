@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "Lil bit faster"
     o.settings = {
         active = true,
-        duration = 7.5,
+        duration = 45,
         chanceMultiplier = 10,
         maxSpeed = 5,
         minSpeed = 2

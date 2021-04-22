@@ -38,7 +38,7 @@ function ui.drawAdvancedSetttings(chaosMod)
 end
 
 function ui.drawMainTab(chaosMod)
-    ImGui.BeginChild("baseSettings", 375, 85, true)
+    ImGui.BeginChild("baseSettings", 375, 127, true)
 
         chaosMod.settings.modActive, changed = ImGui.Checkbox("Mod active", chaosMod.settings.modActive)
         if changed then chaosMod.fileSys.saveSettings(chaosMod) end
@@ -49,8 +49,17 @@ function ui.drawMainTab(chaosMod)
         --chaosMod.settings.interval = math.min(math.max(chaosMod.settings.interval, 20), 6000)
         ImGui.PopItemWidth()
 
-        chaosMod.settings.warningMessage, changed = ImGui.Checkbox("Announce next event", chaosMod.settings.warningMessage)
+        chaosMod.settings.showHUD, changed = ImGui.Checkbox("Show HUD", chaosMod.settings.showHUD)
         if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+
+        chaosMod.settings.bigHUD, changed = ImGui.Checkbox("Big HUD", chaosMod.settings.bigHUD)
+        if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+
+        ImGui.PushItemWidth(130)
+        chaosMod.settings.hudSize, changed = ImGui.InputFloat("HUD Size", chaosMod.settings.hudSize, 0.1, 5, "%.2f")
+        if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+        chaosMod.settings.hudSize = math.min(math.max(chaosMod.settings.hudSize, 0.1), 10)
+        ImGui.PopItemWidth()
 
     ImGui.EndChild()
 
@@ -61,7 +70,7 @@ function ui.drawMainTab(chaosMod)
 end
 
 function ui.draw(chaosMod)
-    if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS:setThemeBegin() end
+    if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS.setThemeBegin() end
 
     if (ImGui.Begin("ChaosMod 0.1", ImGuiWindowFlags.AlwaysAutoResize)) then
         if ImGui.BeginTabBar("Tabbar", ImGuiTabBarFlags.NoTooltip) then
@@ -81,7 +90,7 @@ function ui.draw(chaosMod)
     end
 
     ImGui.End()
-    if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS:setThemeEnd() end
+    if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS.setThemeEnd() end
 end
 
 return ui

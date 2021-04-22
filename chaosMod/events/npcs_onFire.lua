@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "This is fine"
     o.settings = {
         active = true,
-        duration = 0,
+        duration = 25,
         chanceMultiplier = 10
     }
 

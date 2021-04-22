@@ -1,5 +1,6 @@
 local chaosMod = {
     ui = require("modules/ui/ui"),
+    hud = require("modules/ui/hud"),
     fileSys = require("modules/fileSys"),
     utils = require("modules/utils"),
 
@@ -8,11 +9,9 @@ local chaosMod = {
         CPSinstalled = false,
         isInGame = false,
         inMenu = false,
-        cronIDS = {every = nil,
-                   activate = nil,
-                   deactivate = nil},
-        eventRunning = false,
-        currentRandomEvent = nil
+        mainIntervalID = nil,
+        drawHUD = false,
+        activeEvents = {}
 	},
     modules = {
         Cron = require("modules/external/Cron"),
@@ -25,6 +24,9 @@ local chaosMod = {
         modActive = true,
         interval = 30,
         warningMessage = true,
+        showHUD = true,
+        bigHUD = false,
+        hudSize = 1.0
     },
     events = {}
 }
@@ -33,7 +35,7 @@ function chaosMod:new()
 
 registerForEvent("onInit", function()
     pcall(function ()
-		chaosMod.CPS = GetMod("CPStyling"):New()
+		chaosMod.CPS = require("CPStyling")
 	end)
     if chaosMod.CPS ~= nil then chaosMod.runtimeData.CPSinstalled = true end
 
@@ -58,24 +60,23 @@ registerForEvent("onInit", function()
 
     chaosMod.runtimeData.isInGame = not chaosMod.modules.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
 
-    chaosMod.runtimeData.cronIDS.every = chaosMod.modules.Cron.Every(chaosMod.settings.interval, function()
+    chaosMod.runtimeData.mainIntervalID = chaosMod.modules.Cron.Every(chaosMod.settings.interval, function()
         if chaosMod.utils.anyActiveEvent(chaosMod) then
-            chaosMod.runtimeData.currentRandomEvent = chaosMod.utils.getRandomEvent(chaosMod)
-
             if chaosMod.settings.modActive then
-                if chaosMod.settings.warningMessage then Game.GetPlayer():SetWarningMessage(tostring("Event \"" .. chaosMod.runtimeData.currentRandomEvent.name .. "\" in 5 seconds!"), 1) end
-                chaosMod.runtimeData.cronIDS.activate = chaosMod.modules.Cron.After(5, function()
-                    chaosMod.runtimeData.eventRunning = true
-                    chaosMod.runtimeData.currentRandomEvent:activate()
+                local currentRandomEvent = chaosMod.utils.getRandomEvent(chaosMod)
+
+                --if chaosMod.settings.warningMessage then Game.GetPlayer():SetWarningMessage(tostring("Event \"" .. currentRandomEvent.name .. "\" in 5 seconds!"), 1) end
+        
+                table.insert(chaosMod.runtimeData.activeEvents, currentRandomEvent)
+                currentRandomEvent:activate()
+
+                local dID = chaosMod.modules.Cron.After(currentRandomEvent.settings.duration, function()
+                    table.remove(chaosMod.runtimeData.activeEvents, chaosMod.utils.removeItem(currentRandomEvent))
+                    currentRandomEvent:deactivate()
                 end)
 
-                local deactivationDelay = chaosMod.runtimeData.currentRandomEvent.settings.duration
-                if deactivationDelay == 0 then deactivationDelay = chaosMod.settings.interval + 6 end -- 0 means full duration, -1 to make sure the event ends before the next one starts
+                currentRandomEvent.cronID = dID
 
-                chaosMod.runtimeData.cronIDS.deactivate = chaosMod.modules.Cron.After(math.min(deactivationDelay, chaosMod.settings.interval - 1), function() -- +5.5 To make sure it always gets called after the event started
-                    chaosMod.runtimeData.eventRunning = false
-                    chaosMod.runtimeData.currentRandomEvent:deactivate()
-                end)
             end
         end
     end)
@@ -84,17 +85,21 @@ end)
 registerForEvent("onUpdate", function(deltaTime)
     chaosMod.modules.Cron.Update(deltaTime)
 
-    if chaosMod.runtimeData.eventRunning then
-        chaosMod.runtimeData.currentRandomEvent:run(deltaTime)
+    for _, e in pairs(chaosMod.runtimeData.activeEvents) do
+        print(e.name)
     end
 
-    if chaosMod.runtimeData.inMenu then
-        for _, id in pairs(chaosMod.runtimeData.cronIDS) do
-            chaosMod.modules.Cron.Pause(id)
+    for _, e in ipairs(chaosMod.runtimeData.activeEvents) do
+        e:run(deltaTime)
+    end
+
+    if chaosMod.runtimeData.inMenu or not chaosMod.settings.modActive then
+        for _, timer in pairs(chaosMod.modules.Cron.timers) do
+            chaosMod.modules.Cron.Pause(timer.id)
         end
     else
-        for _, id in pairs(chaosMod.runtimeData.cronIDS) do
-            chaosMod.modules.Cron.Resume(id)
+        for _, timer in pairs(chaosMod.modules.Cron.timers) do
+            chaosMod.modules.Cron.Resume(timer.id)
         end
     end
 end)
@@ -102,6 +107,9 @@ end)
 registerForEvent("onDraw", function()
     if chaosMod.runtimeData.showUI then
         chaosMod.ui.draw(chaosMod)
+    end
+    if chaosMod.settings.showHUD and chaosMod.runtimeData.isInGame and not chaosMod.runtimeData.inMenu and chaosMod.settings.modActive then
+        chaosMod.hud.draw(chaosMod)
     end
 end)
 

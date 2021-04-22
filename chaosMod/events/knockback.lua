@@ -8,11 +8,11 @@ function event:new(cM)
     o.name = "Slippy V"
     o.settings = {
         active = true,
-        duration = 0,
+        duration = 45,
         chanceMultiplier = 10,
         recurring = true,
-        delayMin = 3,
-        delayMax = 7
+        delayMin = 4,
+        delayMax = 10
     }
 
     o.data = {

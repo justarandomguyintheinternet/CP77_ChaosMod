@@ -9,7 +9,7 @@ function event:new(cM)
     o.settings = {
         active = true,
         chanceMultiplier = 10,
-        duration = 15
+        duration = 45
     }
 
     o.data = {
