@@ -45,7 +45,14 @@ function ui.drawMainTab(chaosMod)
 
         ImGui.PushItemWidth(130)
         chaosMod.settings.interval, changed = ImGui.InputInt("Interval (Hit \"Reload all mods\")", chaosMod.settings.interval, 20, 6000)
-        if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+        if changed then 
+            for _, timer in pairs(chaosMod.modules.Cron.timers) do
+                if timer.id == chaosMod.runtimeData.mainIntervalID then
+                    timer.timeout = chaosMod.settings.interval
+                end
+            end
+            chaosMod.fileSys.saveSettings(chaosMod) 
+        end
         --chaosMod.settings.interval = math.min(math.max(chaosMod.settings.interval, 20), 6000)
         ImGui.PopItemWidth()
 

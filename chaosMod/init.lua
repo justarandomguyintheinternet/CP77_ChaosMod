@@ -65,13 +65,12 @@ registerForEvent("onInit", function()
             if chaosMod.settings.modActive then
                 local currentRandomEvent = chaosMod.utils.getRandomEvent(chaosMod)
 
-                --if chaosMod.settings.warningMessage then Game.GetPlayer():SetWarningMessage(tostring("Event \"" .. currentRandomEvent.name .. "\" in 5 seconds!"), 1) end
-        
+                --if chaosMod.settings.warningMessage then Game.GetPlayer():SetWarningMessage(tostring("Event \"" .. currentRandomEvent.name .. "\" in 5 seconds!"), 1) end    
                 table.insert(chaosMod.runtimeData.activeEvents, currentRandomEvent)
                 currentRandomEvent:activate()
 
                 local dID = chaosMod.modules.Cron.After(currentRandomEvent.settings.duration, function()
-                    table.remove(chaosMod.runtimeData.activeEvents, chaosMod.utils.removeItem(currentRandomEvent))
+                    chaosMod.utils.removeItem(chaosMod.runtimeData.activeEvents, currentRandomEvent)
                     currentRandomEvent:deactivate()
                 end)
 
@@ -84,10 +83,6 @@ end)
 
 registerForEvent("onUpdate", function(deltaTime)
     chaosMod.modules.Cron.Update(deltaTime)
-
-    for _, e in pairs(chaosMod.runtimeData.activeEvents) do
-        print(e.name)
-    end
 
     for _, e in ipairs(chaosMod.runtimeData.activeEvents) do
         e:run(deltaTime)

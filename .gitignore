@@ -1,2 +1,5 @@
 
 chaosMod/todo.txt
+*.json
+*.log
+*.sqlite3
