@@ -32,14 +32,17 @@ end
 function event:run()
     if self:distanceVector(Game.GetPlayer():GetWorldPosition(), self.data.lastPos) > 0 then
         Game.SetTimeDilation(0)
+        self.chaosMod.sharedData.timeDialation = 1
     else
         Game.SetTimeDilation(0.01)
+        self.chaosMod.sharedData.timeDialation = 0.01
     end
     self.data.lastPos = Game.GetPlayer():GetWorldPosition()
 end
 
 function event:deactivate()
     Game.SetTimeDilation(0)
+    self.chaosMod.sharedData.timeDialation = 0
     Game.GetTimeSystem():SetIgnoreTimeDilationOnLocalPlayerZero(false) 
 end
 

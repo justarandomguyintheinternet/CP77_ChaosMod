@@ -25,7 +25,9 @@ function event:new(cM)
 end
 
 function event:activate()
-    Game.ApplyEffectOnPlayer("BaseStatusEffect.SecondaryKnockdown")
+    if self.chaosMod.sharedData.timeDialation > 0.5 then
+        Game.ApplyEffectOnPlayer("BaseStatusEffect.SecondaryKnockdown")
+    end
     self.data.timerDelay = math.random(self.settings.delayMin, self.settings.delayMax)
 end
 
@@ -34,7 +36,9 @@ function event:run(deltaTime)
     if (self.data.timer > self.data.timerDelay) then
         self.data.timerDelay = math.random(self.settings.delayMin, self.settings.delayMax)
         self.data.timer = self.data.timer - self.data.timerDelay
-        Game.ApplyEffectOnPlayer("BaseStatusEffect.SecondaryKnockdown")
+        if self.chaosMod.sharedData.timeDialation > 0.5 then
+            Game.ApplyEffectOnPlayer("BaseStatusEffect.SecondaryKnockdown")
+        end
     end
 end
 

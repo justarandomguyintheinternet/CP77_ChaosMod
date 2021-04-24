@@ -7,6 +7,8 @@ local chaosMod = {
 	runtimeData = { -- Stuff that shouldnt get saved
 		showUI = false,
         CPSinstalled = false,
+        gtaTravelInstalled = false,
+        traveling = false,
         isInGame = false,
         inMenu = false,
         mainIntervalID = nil,
@@ -28,6 +30,9 @@ local chaosMod = {
         bigHUD = false,
         hudSize = 1.0
     },
+    sharedData = {
+        timeDialation = 1
+    },
     events = {}
 }
 
@@ -39,6 +44,11 @@ registerForEvent("onInit", function()
 	end)
     if chaosMod.CPS ~= nil then chaosMod.runtimeData.CPSinstalled = true end
 
+    pcall(function ()
+		chaosMod.gtaTravel = GetMod("gtaTravel")
+	end)
+    if chaosMod.gtaTravel ~= nil then chaosMod.runtimeData.gtaTravelInstalled = true end
+
     chaosMod.fileSys.tryCreateConfig("config/config.json", chaosMod.defaultSettings)
     chaosMod.fileSys.loadSettings(chaosMod)
 
@@ -48,13 +58,22 @@ registerForEvent("onInit", function()
 
     chaosMod.modules.GameUI.OnSessionStart(function()
         chaosMod.runtimeData.isInGame = true
+        for _, timer in pairs(chaosMod.modules.Cron.timers) do
+            chaosMod.modules.Cron.Resume(timer.id)
+        end
     end)
 
     chaosMod.modules.GameUI.OnSessionEnd(function()
         chaosMod.runtimeData.isInGame = false
         chaosMod.runtimeData.eventRunning = false
-        for _, id in pairs(chaosMod.runtimeData.cronIDS) do
-            chaosMod.modules.Cron.Halt(id)
+        chaosMod.runtimeData.activeEvents = {}
+        for _, timer in pairs(chaosMod.modules.Cron.timers) do
+            if timer.id ~= chaosMod.runtimeData.mainIntervalID then
+                chaosMod.modules.Cron.Halt(timer.id)
+            else
+                chaosMod.modules.Cron.Pause(timer.id)
+                timer.delay = chaosMod.settings.interval
+            end
         end
     end)
 
@@ -62,10 +81,9 @@ registerForEvent("onInit", function()
 
     chaosMod.runtimeData.mainIntervalID = chaosMod.modules.Cron.Every(chaosMod.settings.interval, function()
         if chaosMod.utils.anyActiveEvent(chaosMod) then
-            if chaosMod.settings.modActive then
+            if chaosMod.settings.modActive and chaosMod.runtimeData.isInGame then
                 local currentRandomEvent = chaosMod.utils.getRandomEvent(chaosMod)
 
-                --if chaosMod.settings.warningMessage then Game.GetPlayer():SetWarningMessage(tostring("Event \"" .. currentRandomEvent.name .. "\" in 5 seconds!"), 1) end    
                 table.insert(chaosMod.runtimeData.activeEvents, currentRandomEvent)
                 currentRandomEvent:activate()
 
@@ -84,17 +102,20 @@ end)
 registerForEvent("onUpdate", function(deltaTime)
     chaosMod.modules.Cron.Update(deltaTime)
 
-    for _, e in ipairs(chaosMod.runtimeData.activeEvents) do
-        e:run(deltaTime)
+    if chaosMod.runtimeData.gtaTravelInstalled then
+        chaosMod.runtimeData.traveling = chaosMod.gtaTravel.flyPath
     end
 
-    if chaosMod.runtimeData.inMenu or not chaosMod.settings.modActive then
+    if chaosMod.runtimeData.inMenu or not chaosMod.settings.modActive or chaosMod.runtimeData.traveling then
         for _, timer in pairs(chaosMod.modules.Cron.timers) do
             chaosMod.modules.Cron.Pause(timer.id)
         end
     else
         for _, timer in pairs(chaosMod.modules.Cron.timers) do
             chaosMod.modules.Cron.Resume(timer.id)
+        end
+        for _, e in ipairs(chaosMod.runtimeData.activeEvents) do
+            e:run(deltaTime)
         end
     end
 end)
@@ -103,7 +124,7 @@ registerForEvent("onDraw", function()
     if chaosMod.runtimeData.showUI then
         chaosMod.ui.draw(chaosMod)
     end
-    if chaosMod.settings.showHUD and chaosMod.runtimeData.isInGame and not chaosMod.runtimeData.inMenu and chaosMod.settings.modActive then
+    if chaosMod.settings.showHUD and chaosMod.runtimeData.isInGame and not chaosMod.runtimeData.inMenu and chaosMod.settings.modActive and not chaosMod.runtimeData.traveling then --lmao
         chaosMod.hud.draw(chaosMod)
     end
 end)

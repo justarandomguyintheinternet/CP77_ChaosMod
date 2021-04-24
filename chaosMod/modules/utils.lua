@@ -64,6 +64,14 @@ function miscUtils.getIndex(tab, val)
     return index
 end
 
+function miscUtils.getLength(tab)
+    local count = 0
+    for _ in pairs(tab) do 
+        count = count + 1 
+    end
+    return count
+end
+
 function miscUtils.removeItem(tab, val)
     table.remove(tab, miscUtils.getIndex(tab, val))
 end
@@ -86,7 +94,6 @@ function miscUtils.getRandomEvent(cM)
             end
         end
     end
-
     return cM.events[keys[math.random(1, #keys)]]
 end
 

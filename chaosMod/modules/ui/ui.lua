@@ -1,38 +1,51 @@
-ui = {}
+ui = {
+    filter = ""
+}
 
 function ui.drawBaseEventSettings(chaosMod)
     for _, v in pairs(chaosMod.events) do
-        v.settings.active, changed = ImGui.Checkbox(v.name, v.settings.active)
-        if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+        if (v.name:lower():match(ui.filter:lower())) ~= nil then
+            v.settings.active, changed = ImGui.Checkbox(v.name, v.settings.active)
+            if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+        end
     end
 end
 
 function ui.drawAdvancedSetttings(chaosMod)
+    ui.filter = ImGui.InputTextWithHint('##Filter', 'Search for event...', ui.filter, 10)
+
+    if ui.filter ~= '' then
+        ImGui.SameLine()
+        if ImGui.Button('X') then
+            ui.filter = ''
+        end
+    end
+
     for _, event in pairs(chaosMod.events) do
-        if ImGui.CollapsingHeader(event.name) then
-            ImGui.PushID(tostring(event.name))
+        if (event.name:lower():match(ui.filter:lower()) ~= nil) then
+            if ImGui.CollapsingHeader(event.name) then
+                ImGui.PushID(tostring(event.name))
+                event.settings.active, changed = ImGui.Checkbox("Active", event.settings.active)
+                if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+                event.settings.duration, changed = ImGui.InputFloat("Duration", event.settings.duration, 0, 9999, "%.1f")
+                event.settings.duration = math.min(math.max(event.settings.duration, 0), 9999)
+                if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+                event.settings.chanceMultiplier, changed = ImGui.InputInt("Chance Multiplier", event.settings.chanceMultiplier, 0, 25000)
+                event.settings.chanceMultiplier = math.min(math.max(event.settings.chanceMultiplier, 0), 25000)
+                if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+                ImGui.Separator()
+                pcall(function ()
+                    event:drawCustomSettings()
+                end)
 
-            event.settings.active, changed = ImGui.Checkbox("Active", event.settings.active)
-            if changed then chaosMod.fileSys.saveSettings(chaosMod) end
-            event.settings.duration, changed = ImGui.InputFloat("Duration", event.settings.duration, 0, 9999, "%.1f")
-            event.settings.duration = math.min(math.max(event.settings.duration, 0), 9999)
-            if changed then chaosMod.fileSys.saveSettings(chaosMod) end
-            event.settings.chanceMultiplier, changed = ImGui.InputInt("Chance Multiplier", event.settings.chanceMultiplier, 0, 9999)
-            event.settings.chanceMultiplier = math.min(math.max(event.settings.chanceMultiplier, 0), 9999)
-            if changed then chaosMod.fileSys.saveSettings(chaosMod) end
-            ImGui.Separator()
-            pcall(function ()
-                event:drawCustomSettings()
-            end)
+                pressed = ImGui.Button("Reset Settings")
+                if pressed then 
+                    event.settings = chaosMod.utils.deepcopy(event.backupSettings)
+                    chaosMod.fileSys.saveSettings(chaosMod)
+                end
 
-            pressed = ImGui.Button("Reset Settings")
-            if pressed then 
-                event.settings = nil
-                chaosMod.fileSys.saveSettings(chaosMod)
-                chaosMod.fileSys.loadSettings(chaosMod)
+                ImGui.PopID()
             end
-
-            ImGui.PopID()
         end
     end
 end
@@ -41,19 +54,39 @@ function ui.drawMainTab(chaosMod)
     ImGui.BeginChild("baseSettings", 375, 127, true)
 
         chaosMod.settings.modActive, changed = ImGui.Checkbox("Mod active", chaosMod.settings.modActive)
-        if changed then chaosMod.fileSys.saveSettings(chaosMod) end
+        if changed then
+            if not chaosMod.settings.modActive then
+                for _, e in pairs(chaosMod.runtimeData.activeEvents) do
+                    e:deactivate()
+                end
+                for _, timer in pairs(chaosMod.modules.Cron.timers) do
+                    if timer.id ~= chaosMod.runtimeData.mainIntervalID then
+                        chaosMod.modules.Cron.Halt(timer.id)
+                    else
+                        chaosMod.modules.Cron.Pause(timer.id)
+                        timer.delay = chaosMod.settings.interval
+                    end
+                end
+            else
+                chaosMod.modules.Cron.Resume(chaosMod.runtimeData.mainIntervalID)
+            end
+            chaosMod.runtimeData.activeEvents = {}
+            chaosMod.fileSys.saveSettings(chaosMod)
+        end
 
         ImGui.PushItemWidth(130)
-        chaosMod.settings.interval, changed = ImGui.InputInt("Interval (Hit \"Reload all mods\")", chaosMod.settings.interval, 20, 6000)
+        chaosMod.settings.interval, changed = ImGui.InputInt("Interval", chaosMod.settings.interval, 5, 6000)
+        chaosMod.settings.interval = math.min(math.max(chaosMod.settings.interval, 5), 6000)
         if changed then 
             for _, timer in pairs(chaosMod.modules.Cron.timers) do
                 if timer.id == chaosMod.runtimeData.mainIntervalID then
                     timer.timeout = chaosMod.settings.interval
+                    timer.delay = chaosMod.settings.interval
                 end
             end
             chaosMod.fileSys.saveSettings(chaosMod) 
         end
-        --chaosMod.settings.interval = math.min(math.max(chaosMod.settings.interval, 20), 6000)
+
         ImGui.PopItemWidth()
 
         chaosMod.settings.showHUD, changed = ImGui.Checkbox("Show HUD", chaosMod.settings.showHUD)
@@ -72,6 +105,15 @@ function ui.drawMainTab(chaosMod)
 
     ImGui.Separator()
     ImGui.Text("Activate / Deactivate Events")
+
+    ui.filter = ImGui.InputTextWithHint('##Filter', 'Search for event...', ui.filter, 10)
+
+    if ui.filter ~= '' then
+        ImGui.SameLine()
+        if ImGui.Button('X') then
+            ui.filter = ''
+        end
+    end
 
     ui.drawBaseEventSettings(chaosMod)
 end

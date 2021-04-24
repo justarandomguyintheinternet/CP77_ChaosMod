@@ -6,11 +6,11 @@ function hud.drawEvents(chaosMod)
     for _, timer in ipairs(chaosMod.modules.Cron.timers) do
 		for _, e in ipairs(chaosMod.runtimeData.activeEvents) do
             if e.cronID == timer.id then
-                ImGui.ProgressBar(1 - ((e.settings.duration - timer.delay) / e.settings.duration), 100, 15, "")
+                ImGui.ProgressBar(1 - ((e.settings.duration - timer.delay) / e.settings.duration), 100 * chaosMod.settings.hudSize, 15 * chaosMod.settings.hudSize, "")
                 ImGui.SameLine()
                 ImGui.Text(e.name)
             end
-        end	
+        end
 	end
 end
 
@@ -33,6 +33,7 @@ function hud.draw(chaosMod)
             ImGui.ProgressBar(hud.nextProgress, 100 * chaosMod.settings.hudSize, 15 * chaosMod.settings.hudSize, "")
             ImGui.SameLine()  
             ImGui.Text("Next event")
+            ImGui.Separator()
         end
         hud.drawEvents(chaosMod)
     end
@@ -48,7 +49,7 @@ function hud.draw(chaosMod)
     ImGui.End()
 
     chaosMod.CPS.colorEnd(1)
-    chaosMod.CPS.styleEnd(1)   
+    chaosMod.CPS.styleEnd(1)
     chaosMod.CPS.setThemeEnd()
 
 end

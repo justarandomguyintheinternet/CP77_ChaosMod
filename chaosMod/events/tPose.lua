@@ -5,7 +5,7 @@ function event:new(cM)
 
     o.chaosMod = cM
 
-    o.name = "Ready when its ready"
+    o.name = "Ready when its done"
     o.settings = {
         active = true,
         chanceMultiplier = 10,

@@ -38,6 +38,7 @@ function event:run(deltaTime)
         local objs = self.chaosMod.utils.getObjects(999)
         for _, v in pairs(objs) do
             if v:IsVehicle() then
+                ---@type VehicleComponent
                 local vComp = v:GetVehicleComponent()
                 vComp:HonkAndFlash()
             end

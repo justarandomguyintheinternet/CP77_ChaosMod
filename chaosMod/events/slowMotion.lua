@@ -18,7 +18,9 @@ function event:new(cM)
 end
 
 function event:activate()
-    Game.SetTimeDilation((0.75 / math.random(1, 10)) * self.settings.multiplier)
+    local set = (0.75 / math.random(1, 10)) * self.settings.multiplier
+    Game.SetTimeDilation(set)
+    self.chaosMod.sharedData.timeDialation = set
 end
 
 function event:run()
@@ -27,6 +29,7 @@ end
 
 function event:deactivate()
     Game.SetTimeDilation(0)
+    self.chaosMod.sharedData.timeDialation = 1
 end
 
 function event:drawCustomSettings()

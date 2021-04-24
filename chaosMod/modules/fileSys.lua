@@ -51,8 +51,9 @@ function config.loadSettings(cM)
 
     for _, file in pairs(dir("events")) do
         local m = require("events/" .. file.name):new(cM)
-        
-        events[m.name] = m
+        m.backupSettings = cM.utils.deepcopy(m.settings)
+
+        events[#events + 1] = m
 
         if eventSettings ~= nil then
             if eventSettings[m.name] ~= nil then
@@ -63,7 +64,9 @@ function config.loadSettings(cM)
 
     cM.settings = config.loadFile("config/config.json")
     cM.events = events
-
+    table.sort(cM.events, function (a, b)
+        return a.name < b.name
+    end)
     config.saveSettings(cM)
 end
 
