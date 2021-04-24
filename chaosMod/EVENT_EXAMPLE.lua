@@ -3,13 +3,13 @@ event = {}
 function event:new(cM) 
 	local o = {} 
 
-    o.chaosMod = cM -- You can use CET-Kit modules, for example: self.chaosMod.modules.GameSettings. See https://github.com/psiberx/cp2077-cet-kit
+    o.chaosMod = cM -- You can use CET-Kit modules, for example: self.chaosMod.modules.GameSettings. See https://github.com/psiberx/cp2077-cet-kit, but also stuff from chaosMod.utils, just check it out
 
     o.name = "The event name" -- Here goes the name of the effect that will be visible
     o.settings = { -- Everything in here gets saved to config file when calling self.chaosMod.fileSys.saveSettings(self.chaosMod), if you add a new value make sure to hit the "Reset Settings" button of the event
         active = true, -- This, duration and chanceMultiplier are always required
         chanceMultiplier = 10, -- This can be used to change how likely this event is to happen. DEFAULT FOR ALL EVENTS IS SUPPOSED TO BE 10
-        duration = 7.5, -- This value sets how long the event is active / after what time the deactivate gets called. USE 0 TO MAKE IT RUN ALL THE TIME UNTIL THE NEXT EVENT
+        duration = 7.5, -- This value sets how long the event is active / gets displayed in the hud / after what time the deactivate gets called. Default / recommended for one time events is 5
         var = 5 -- Custom variable that gets saved, code for its UI goes in event:drawCustomSettings()
     }
 
@@ -19,11 +19,11 @@ function event:new(cM)
    	return setmetatable(o, self)
 end
 
-function event:activate() -- This gets called 5 seconds after the event got announced (Start of the event)
+function event:activate() -- This gets called when the event gets started (Start of the event)
     print("This event started")
 end
 
-function event:run(deltaTime) -- This gets executed every frame for the duration of the event
+function event:run(deltaTime) -- This gets executed every frame for the duration of the event, deltaTime as in registerForEvent("onUpdate", function(deltaTime) end)
     print("This event is running")
 end
 

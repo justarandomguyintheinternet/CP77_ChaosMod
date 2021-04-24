@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "Name"
     o.settings = {
         active = true,
-        duration = 0,
+        duration = 5,
         chanceMultiplier = 10
     }
 

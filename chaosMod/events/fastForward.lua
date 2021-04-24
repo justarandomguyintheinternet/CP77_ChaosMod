@@ -23,7 +23,6 @@ end
 function event:activate()
     local set = 1 * math.random(self.settings.minSpeed, self.settings.maxSpeed)
     Game.SetTimeDilation(set)
-    self.chaosMod.sharedData.timeDialation = set
 end
 
 function event:run()
@@ -32,7 +31,6 @@ end
 
 function event:deactivate()
     Game.SetTimeDilation(0)
-    self.chaosMod.sharedData.timeDialation = 1
 end
 
 function event:drawCustomSettings()

@@ -80,7 +80,7 @@ registerForEvent("onInit", function()
     chaosMod.runtimeData.isInGame = not chaosMod.modules.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
 
     chaosMod.runtimeData.mainIntervalID = chaosMod.modules.Cron.Every(chaosMod.settings.interval, function()
-        if chaosMod.utils.anyActiveEvent(chaosMod) then
+        if chaosMod.utils.anyAvailableEvent(chaosMod) then
             if chaosMod.settings.modActive and chaosMod.runtimeData.isInGame then
                 local currentRandomEvent = chaosMod.utils.getRandomEvent(chaosMod)
 
@@ -97,6 +97,12 @@ registerForEvent("onInit", function()
             end
         end
     end)
+end)
+
+registerForEvent("onShutdown", function ()
+    for _, e in pairs(chaosMod.runtimeData.activeEvents) do
+        e:deactivate()
+    end
 end)
 
 registerForEvent("onUpdate", function(deltaTime)

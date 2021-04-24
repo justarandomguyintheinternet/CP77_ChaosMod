@@ -21,7 +21,6 @@ end
 
 function event:activate()
     Game.SetTimeDilation(self.settings.speed)
-    self.chaosMod.sharedData.timeDialation = self.settings.speed
 end
 
 function event:run()
@@ -30,7 +29,6 @@ end
 
 function event:deactivate()
     Game.SetTimeDilation(0)
-    self.chaosMod.sharedData.timeDialation = 1
 end
 
 function event:drawCustomSettings()

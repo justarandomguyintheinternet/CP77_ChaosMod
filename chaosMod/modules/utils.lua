@@ -80,11 +80,9 @@ function miscUtils.getRandomEvent(cM)
     local keys = {}
     for k, v in pairs(cM.events) do
         if v.settings.active then
-            for _, e in pairs(cM.runtimeData.activeEvents) do
-                if not (v.name == e.name) then
-                    for var=1,v.settings.chanceMultiplier do
-                        table.insert(keys, k)
-                    end
+            if not miscUtils.has_value(cM.runtimeData.activeEvents, v) then
+                for var=1,v.settings.chanceMultiplier do
+                    table.insert(keys, k)
                 end
             end
             if #cM.runtimeData.activeEvents == 0 then
@@ -94,10 +92,11 @@ function miscUtils.getRandomEvent(cM)
             end
         end
     end
+
     return cM.events[keys[math.random(1, #keys)]]
 end
 
-function miscUtils.anyActiveEvent(cM)
+function miscUtils.anyAvailableEvent(cM)
     local any = false
     for _, v in pairs(cM.events) do
         if v.settings.active == true then
@@ -105,7 +104,7 @@ function miscUtils.anyActiveEvent(cM)
             for _, e in pairs(cM.runtimeData.activeEvents) do
                 if (v.name == e.name) then
                     running = true
-                end      
+                end
             end
             if not running then
                 any = true
@@ -119,7 +118,6 @@ function miscUtils.getObjects(range, filter) -- Filter must be any of those: htt
     local objects = {}
 
     local range = range or Game["SNameplateRangesData::GetDisplayRange;"]()
-    if Game.GetWorkspotSystem():IsActorInWorkspot(Game.GetPlayer()) then spin = false end
 
     local player = Game.GetPlayer()
     local targetingSystem = Game.GetTargetingSystem()

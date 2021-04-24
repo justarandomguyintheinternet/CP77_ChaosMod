@@ -115,6 +115,20 @@ function ui.drawMainTab(chaosMod)
         end
     end
 
+    if ImGui.Button("All on") then
+        for _, e in pairs(chaosMod.events) do
+            e.settings.active = true
+        end
+        chaosMod.fileSys.saveSettings(chaosMod)
+    end
+    ImGui.SameLine()
+    if ImGui.Button("All off") then
+        for _, e in pairs(chaosMod.events) do
+            e.settings.active = false
+        end
+        chaosMod.fileSys.saveSettings(chaosMod)
+    end
+
     ui.drawBaseEventSettings(chaosMod)
 end
 
