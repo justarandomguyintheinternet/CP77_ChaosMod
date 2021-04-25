@@ -15,7 +15,7 @@ local chaosMod = {
         drawHUD = false,
         activeEvents = {}
 	},
-    modules = {
+    modules = { -- CET-Kit modules https://github.com/psiberx/cp2077-cet-kit
         Cron = require("modules/external/Cron"),
         GameHUD = require("modules/external/GameHUD"),
         GameSession = require("modules/external/GameSession"),
@@ -25,13 +25,9 @@ local chaosMod = {
     defaultSettings = {
         modActive = true,
         interval = 30,
-        warningMessage = true,
         showHUD = true,
         bigHUD = false,
         hudSize = 1.0
-    },
-    sharedData = {
-        timeDialation = 1
     },
     events = {}
 }

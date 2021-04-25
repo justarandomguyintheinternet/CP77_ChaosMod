@@ -26,6 +26,7 @@ end
 
 function event:activate()
     Game.SetTimeDilation(0)
+    Game.GetTimeSystem():SetIgnoreTimeDilationOnLocalPlayerZero(false)
     Game.ApplyEffectOnPlayer("BaseStatusEffect.SecondaryKnockdown")
     self.data.timerDelay = math.random(self.settings.delayMin, self.settings.delayMax)
 end
@@ -36,6 +37,7 @@ function event:run(deltaTime)
         self.data.timerDelay = math.random(self.settings.delayMin, self.settings.delayMax)
         self.data.timer = self.data.timer - self.data.timerDelay
         Game.SetTimeDilation(0)
+        Game.GetTimeSystem():SetIgnoreTimeDilationOnLocalPlayerZero(false)
         Game.ApplyEffectOnPlayer("BaseStatusEffect.SecondaryKnockdown")
     end
 end

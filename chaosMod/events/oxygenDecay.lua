@@ -8,7 +8,7 @@ function event:new(cM)
     o.name = "V the fish"
     o.settings = {
         active = true,
-        duration = 45,
+        duration = 30,
         chanceMultiplier = 10,
         stopAfterDuration = true
     }

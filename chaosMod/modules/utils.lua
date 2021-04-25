@@ -44,9 +44,9 @@ function miscUtils.has_value(tab, val)
     return false
 end
 
-function miscUtils.has_object(tab, val)
+function miscUtils.hasEntID(tab, ID)
     for _, value in ipairs(tab) do
-        if value:GetEntityID().hash == val:GetEntityID().hash then
+        if value.hash == ID.hash then
             return true
         end
     end

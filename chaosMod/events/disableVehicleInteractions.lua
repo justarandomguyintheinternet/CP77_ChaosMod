@@ -5,7 +5,7 @@ function event:new(cM)
 
     o.chaosMod = cM
 
-    o.name = "Boop"
+    o.name = "Vehicle props"
     o.settings = {
         active = true,
         duration = 75,
@@ -14,7 +14,7 @@ function event:new(cM)
 
     o.data = {
         timer = 0,
-        timerDelay = 3
+        timerDelay = 0.5
     }
 
 	self.__index = self
@@ -22,7 +22,7 @@ function event:new(cM)
 end
 
 function event:activate()
-
+    self.data.ids = {}
 end
 
 function event:run(deltaTime)
@@ -31,23 +31,32 @@ function event:run(deltaTime)
         self.data.timer = self.data.timer - self.data.timerDelay
 
         if Game['GetMountedVehicle;GameObject'](Game.GetPlayer()) ~= nil then
-            local vComp = Game['GetMountedVehicle;GameObject'](Game.GetPlayer()):GetVehicleComponent()
-            vComp:HonkAndFlash()
+            local vPS = Game['GetMountedVehicle;GameObject'](Game.GetPlayer()):GetVehiclePS()
+            vPS:DisableAllVehInteractions()
         end
 
         local objs = self.chaosMod.utils.getObjects(999)
         for _, v in pairs(objs) do
             if v:IsVehicle() then
-                ---@type VehicleComponent
-                local vComp = v:GetVehicleComponent()
-                vComp:HonkAndFlash()
+                if not self.chaosMod.utils.hasEntID(self.data.ids, v:GetEntityID()) then
+                    table.insert(self.data.ids, v:GetEntityID())
+                end
+
+                local vPS = v:GetVehiclePS()
+                vPS:DisableAllVehInteractions()
             end
         end
     end
 end
 
-function event:deactivate() 
-
+function event:deactivate()
+    for _, v in pairs(self.data.ids) do
+        local veh = Game.FindEntityByID(v)
+        if veh then
+            local vPS = veh:GetVehiclePS()
+            vPS:ResetVehicleInteractionState()
+        end
+    end
 end
 
 function event:drawCustomSettings()

@@ -25,7 +25,7 @@ function event:new(cM)
 end
 
 function event:activate()
-    self.data.vehicles = {}
+    self.data.ids = {}
 end
 
 function event:run(deltaTime)
@@ -43,8 +43,8 @@ function event:run(deltaTime)
         local objs = self.chaosMod.utils.getObjects(999)
         for _, v in pairs(objs) do
             if v:IsVehicle() then
-                if not self.chaosMod.utils.has_object(self.data.vehicles, v) then
-                    table.insert(self.data.vehicles, v)
+                if not self.chaosMod.utils.hasEntID(self.data.ids, v:GetEntityID()) then
+                    table.insert(self.data.ids, v:GetEntityID())
                 end
                 local vController = v:GetController()
                 vController:SetLightStrength(1, self.settings.strength, 0)
@@ -56,8 +56,7 @@ function event:run(deltaTime)
     end
 end
 
-function event:deactivate() 
-
+function event:deactivate()
     if self.settings.deactivate then
         if Game['GetMountedVehicle;GameObject'](Game.GetPlayer()) ~= nil then
             local vController = Game['GetMountedVehicle;GameObject'](Game.GetPlayer()):GetController()
@@ -66,11 +65,14 @@ function event:deactivate()
             vController:SetLightStrength(4, 1, 0)
         end
 
-        for _, v in pairs(self.data.vehicles) do
-            local vController = v:GetController()
-            vController:SetLightStrength(1, 1, 0)
-            vController:SetLightStrength(2, 1, 0)
-            vController:SetLightStrength(4, 1, 0)
+        for _, v in pairs(self.data.ids) do
+            local veh = Game.FindEntityByID(v)
+            if veh then
+                local vController = veh:GetController()
+                vController:SetLightStrength(1, 1, 0)
+                vController:SetLightStrength(2, 1, 0)
+                vController:SetLightStrength(4, 1, 0)
+            end
         end
     end
 end
