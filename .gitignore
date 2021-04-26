@@ -4,3 +4,5 @@ chaosMod/todo.txt
 *.log
 *.sqlite3
 chaosMod/test.lua
+*.txt
+test.lua
