@@ -3,6 +3,7 @@ local chaosMod = {
     hud = require("modules/ui/hud"),
     fileSys = require("modules/fileSys"),
     utils = require("modules/utils"),
+    input = require("modules/input"),
 
 	runtimeData = { -- Stuff that shouldnt get saved
 		showUI = false,
@@ -47,6 +48,8 @@ registerForEvent("onInit", function()
 
     chaosMod.fileSys.tryCreateConfig("config/config.json", chaosMod.defaultSettings)
     chaosMod.fileSys.loadSettings(chaosMod)
+
+    chaosMod.input.startInputObserver()
 
     Observe('RadialWheelController', 'OnIsInMenuChanged', function(isInMenu ) -- Setup observer and GameUI to detect inGame / inMenu
         chaosMod.runtimeData.inMenu = isInMenu 
