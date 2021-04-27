@@ -3,11 +3,10 @@ local chaosMod = {
     hud = require("modules/ui/hud"),
     fileSys = require("modules/fileSys"),
     utils = require("modules/utils"),
-    input = require("modules/input"),
+    CPS = require("CPStyling"),
 
 	runtimeData = { -- Stuff that shouldnt get saved
 		showUI = false,
-        CPSinstalled = false,
         gtaTravelInstalled = false,
         traveling = false,
         isInGame = false,
@@ -22,7 +21,9 @@ local chaosMod = {
         GameSession = require("modules/external/GameSession"),
         GameSettings = require("modules/external/GameSettings"),
         GameUI = require("modules/external/GameUI"),
+        AIControl = require("modules/external/AIControl")
     },
+    observers = {},
     defaultSettings = {
         modActive = true,
         interval = 30,
@@ -37,11 +38,6 @@ function chaosMod:new()
 
 registerForEvent("onInit", function()
     pcall(function ()
-		chaosMod.CPS = require("CPStyling")
-	end)
-    if chaosMod.CPS ~= nil then chaosMod.runtimeData.CPSinstalled = true end
-
-    pcall(function ()
 		chaosMod.gtaTravel = GetMod("gtaTravel")
 	end)
     if chaosMod.gtaTravel ~= nil then chaosMod.runtimeData.gtaTravelInstalled = true end
@@ -49,7 +45,7 @@ registerForEvent("onInit", function()
     chaosMod.fileSys.tryCreateConfig("config/config.json", chaosMod.defaultSettings)
     chaosMod.fileSys.loadSettings(chaosMod)
 
-    chaosMod.input.startInputObserver()
+    chaosMod.fileSys.startObservers(chaosMod)
 
     Observe('RadialWheelController', 'OnIsInMenuChanged', function(isInMenu ) -- Setup observer and GameUI to detect inGame / inMenu
         chaosMod.runtimeData.inMenu = isInMenu 
@@ -145,4 +141,3 @@ end)
 end
 
 return chaosMod:new()
-

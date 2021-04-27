@@ -70,4 +70,13 @@ function config.loadSettings(cM)
     config.saveSettings(cM)
 end
 
+function config.startObservers(cM)
+    for _, file in pairs(dir("observers")) do
+        local m = require("observers/" .. file.name):new()
+        m:init()
+        
+        cM.observers[m.name] = m
+    end
+end
+
 return config

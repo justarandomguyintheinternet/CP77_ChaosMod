@@ -1,70 +1,80 @@
-input = {
-    forward = false,
-    backwards = false,
-    right = false,
-    left = false,
-    jump = false,
-    crouch = false,
-    scrollUp = false,
-    scrollDown = false,
-    shoot = false,
-    adsComplete = false
-}
+observer = {}
 
-function input.startInputObserver()
+function observer:new() 
+	local o = {} 
+
+    o.name = "input"
+    o.data = {
+        forward = false,
+        backwards = false,
+        right = false,
+        left = false,
+        jump = false,
+        crouch = false,
+        scrollUp = false,
+        scrollDown = false,
+        shoot = false,
+        adsComplete = false
+    }
+
+	self.__index = self
+   	return setmetatable(o, self)
+end
+
+function observer:init()
     Observe('PlayerPuppet', 'OnAction', function(action)
         local actionName = Game.NameToString(action:GetName(action))
         local actionType = action:GetType(action).value
         if actionName == 'Forward' then
             if actionType == 'BUTTON_PRESSED' then
-                input.forward = true
+                self.data.forward = true
             elseif actionType == 'BUTTON_RELEASED' then
-                input.forward = false
+                self.data.forward = false
             end
         elseif actionName == 'Back'then
             if actionType == 'BUTTON_PRESSED' then
-                input.backwards = true
+                self.data.backwards = true
             elseif actionType == 'BUTTON_RELEASED' then
-                input.backwards = false
+                self.data.backwards = false
             end
         elseif actionName == 'Right'then
             if actionType == 'BUTTON_PRESSED' then
-                input.right = true
+                self.data.right = true
             elseif actionType == 'BUTTON_RELEASED' then
-                input.right = false
+                self.data.right = false
             end
         elseif actionName == 'Left'then
             if actionType == 'BUTTON_PRESSED' then
-                input.left = true
+                self.data.left = true
             elseif actionType == 'BUTTON_RELEASED' then
-                input.left = false
+                self.data.left = false
             end
         elseif actionName == 'ToggleSprint'then
             if actionType == 'BUTTON_PRESSED' then
-                input.crouch = true
+                self.data.crouch = true
             elseif actionType == 'BUTTON_RELEASED' then
-                input.crouch = false
+                self.data.crouch = false
             end
         elseif actionName == 'Jump'then
             if actionType == 'BUTTON_PRESSED' or actionType == 'BUTTON_HOLD_COMPLETE' then
-                input.jump = true
+                self.data.jump = true
             elseif actionType == 'BUTTON_RELEASED' then
-                input.jump = false
+                self.data.jump = false
             end
         elseif actionName == 'RangedAttack'then
             if actionType == 'BUTTON_PRESSED'then
-                input.shoot = true
+                self.data.shoot = true
             elseif actionType == 'BUTTON_RELEASED' then
-                input.shoot = false
+                self.data.shoot = false
             end
         elseif actionName == 'RangedADS' then
             if actionType == 'BUTTON_HOLD_COMPLETE' then
-                input.adsComplete = true
+                self.data.adsComplete = true
             elseif actionType == "BUTTON_RELEASED" then
-                input.adsComplete = false
+                self.data.adsComplete = false
             end
         end
     end)
 end
 
-return input
+return observer

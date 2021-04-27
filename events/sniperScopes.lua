@@ -31,7 +31,7 @@ function event:activate()
 end
 
 function event:run(deltaTime)
-    if self.chaosMod.input.adsComplete == true then
+    if self.chaosMod.observers.input.data.adsComplete == true then
         if self.data.updateAmount then
             self.data.updateAmount = false
             self.data.amount = math.random(self.settings.minAmount, self.settings.maxAmount)

@@ -133,11 +133,11 @@ function ui.drawMainTab(chaosMod)
 end
 
 function ui.draw(chaosMod)
-    if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS.setThemeBegin() end
+    chaosMod.CPS.setThemeBegin()
 
     if (ImGui.Begin("ChaosMod 0.1", ImGuiWindowFlags.AlwaysAutoResize)) then
         if ImGui.BeginTabBar("Tabbar", ImGuiTabBarFlags.NoTooltip) then
-            if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS.styleBegin("TabRounding", 0) end
+            chaosMod.CPS.styleBegin("TabRounding", 0)
             if ImGui.BeginTabItem("Main") then
                 ui.drawMainTab(chaosMod)
                 ImGui.EndTabItem()
@@ -147,13 +147,13 @@ function ui.draw(chaosMod)
                 ui.drawAdvancedSetttings(chaosMod)
                 ImGui.EndTabItem()
             end
-            if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS.styleEnd(1) end
+            chaosMod.CPS.styleEnd(1)
             ImGui.EndTabBar()
         end
     end
 
     ImGui.End()
-    if chaosMod.runtimeData.CPSinstalled then chaosMod.CPS.setThemeEnd() end
+    chaosMod.CPS.setThemeEnd()
 end
 
 return ui
