@@ -23,9 +23,9 @@ function event:activate()
 end
 
 function event:run(deltaTime)
-    if self.chaosMod.observers.vehicleHit.hit then
-        self.chaosMod.observers.vehicleHit.hit = false
-        local car = self.chaosMod.observers.vehicleHit.car
+    if self.chaosMod.observers.vehicleHit.data.hit then
+        self.chaosMod.observers.vehicleHit.data.hit = false
+        local car = self.chaosMod.observers.vehicleHit.data.car
         local vComp = car:GetVehicleComponent()
         local vPS = car:GetVehiclePS()
         if not car:IsDestroyed() then

@@ -1,4 +1,3 @@
-local Cron = require "modules.external.Cron"
 event = {}
 
 function event:new(cM) 
