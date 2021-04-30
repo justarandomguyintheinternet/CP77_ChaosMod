@@ -23,7 +23,6 @@ local chaosMod = {
         GameUI = require("modules/external/GameUI"),
         AIControl = require("modules/external/AIControl")
     },
-    observers = {},
     defaultSettings = {
         modActive = true,
         interval = 30,
@@ -31,6 +30,7 @@ local chaosMod = {
         bigHUD = false,
         hudSize = 1.0
     },
+    observers = {},
     events = {}
 }
 
@@ -40,12 +40,12 @@ registerForEvent("onInit", function()
     pcall(function ()
 		chaosMod.gtaTravel = GetMod("gtaTravel")
 	end)
-    if chaosMod.gtaTravel ~= nil then chaosMod.runtimeData.gtaTravelInstalled = true end
+    if chaosMod.gtaTravel ~= nil then chaosMod.runtimeData.gtaTravelInstalled = true end -- Mod shouldnt run during gtaTravel transition
 
     chaosMod.fileSys.tryCreateConfig("config/config.json", chaosMod.defaultSettings)
     chaosMod.fileSys.loadSettings(chaosMod)
 
-    chaosMod.fileSys.startObservers(chaosMod)
+    chaosMod.fileSys.startObservers(chaosMod) -- Start custom observers from inside /observers
 
     Observe('RadialWheelController', 'OnIsInMenuChanged', function(isInMenu ) -- Setup observer and GameUI to detect inGame / inMenu
         chaosMod.runtimeData.inMenu = isInMenu 
@@ -66,7 +66,7 @@ registerForEvent("onInit", function()
             if timer.id ~= chaosMod.runtimeData.mainIntervalID then
                 chaosMod.modules.Cron.Halt(timer.id)
             else
-                chaosMod.modules.Cron.Pause(timer.id)
+                chaosMod.modules.Cron.Pause(timer.id) -- Only pause and reset main timer
                 timer.delay = chaosMod.settings.interval
             end
         end
@@ -74,7 +74,7 @@ registerForEvent("onInit", function()
 
     chaosMod.runtimeData.isInGame = not chaosMod.modules.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
 
-    chaosMod.runtimeData.mainIntervalID = chaosMod.modules.Cron.Every(chaosMod.settings.interval, function()
+    chaosMod.runtimeData.mainIntervalID = chaosMod.modules.Cron.Every(chaosMod.settings.interval, function() -- Main timer
         if chaosMod.utils.anyAvailableEvent(chaosMod) then
             if chaosMod.settings.modActive and chaosMod.runtimeData.isInGame then
                 local currentRandomEvent = chaosMod.utils.getRandomEvent(chaosMod)
@@ -88,7 +88,6 @@ registerForEvent("onInit", function()
                 end)
 
                 currentRandomEvent.cronID = dID
-
             end
         end
     end)

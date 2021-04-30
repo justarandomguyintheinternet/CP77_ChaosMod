@@ -31,7 +31,7 @@ function hud.draw(chaosMod)
         ImGui.SetWindowFontScale(chaosMod.settings.hudSize)
         if not chaosMod.settings.bigHUD then
             ImGui.ProgressBar(hud.nextProgress, 100 * chaosMod.settings.hudSize, 15 * chaosMod.settings.hudSize, "")
-            ImGui.SameLine()  
+            ImGui.SameLine()
             ImGui.Text("Next event")
             ImGui.Separator()
         end
@@ -42,7 +42,7 @@ function hud.draw(chaosMod)
 
     if chaosMod.settings.bigHUD then
         if (ImGui.Begin("bigHUD", bit32.bor(ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoTitleBar))) then
-            ImGui.SetWindowPos(0, -7)
+            ImGui.SetWindowPos(0, -7) -- -7 because otherwise bar is too low
             ImGui.ProgressBar(hud.nextProgress, wWidth, 12, "")
         end
     end

@@ -2,7 +2,7 @@ ui = {
     filter = ""
 }
 
-function ui.drawBaseEventSettings(chaosMod)
+function ui.drawBaseEventSettings(chaosMod) -- Draws the "Main" tab checkboxes
     for _, v in pairs(chaosMod.events) do
         if (v.name:lower():match(ui.filter:lower())) ~= nil then
             v.settings.active, changed = ImGui.Checkbox(v.name, v.settings.active)
@@ -11,7 +11,7 @@ function ui.drawBaseEventSettings(chaosMod)
     end
 end
 
-function ui.drawAdvancedSetttings(chaosMod)
+function ui.drawAdvancedSetttings(chaosMod) 
     ui.filter = ImGui.InputTextWithHint('##Filter', 'Search for event...', ui.filter, 10)
 
     if ui.filter ~= '' then
@@ -34,10 +34,12 @@ function ui.drawAdvancedSetttings(chaosMod)
                 event.settings.chanceMultiplier = math.min(math.max(event.settings.chanceMultiplier, 0), 25000)
                 if changed then chaosMod.fileSys.saveSettings(chaosMod) end
                 ImGui.Separator()
+
                 pcall(function ()
                     event:drawCustomSettings()
                 end)
 
+                ImGui.Separator()
                 pressed = ImGui.Button("Reset Settings")
                 if pressed then 
                     event.settings = chaosMod.utils.deepcopy(event.backupSettings)
@@ -134,8 +136,8 @@ end
 
 function ui.draw(chaosMod)
     chaosMod.CPS.setThemeBegin()
-
-    if (ImGui.Begin("ChaosMod 0.1", ImGuiWindowFlags.AlwaysAutoResize)) then
+    if (ImGui.Begin("ChaosMod 0.1")) then
+        ImGui.SetWindowSize(300, 700)
         if ImGui.BeginTabBar("Tabbar", ImGuiTabBarFlags.NoTooltip) then
             chaosMod.CPS.styleBegin("TabRounding", 0)
             if ImGui.BeginTabItem("Main") then

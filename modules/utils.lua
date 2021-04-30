@@ -96,7 +96,7 @@ function miscUtils.getRandomEvent(cM)
     return cM.events[keys[math.random(1, #keys)]]
 end
 
-function miscUtils.anyAvailableEvent(cM)
+function miscUtils.anyAvailableEvent(cM) -- Returns if there is any event that can get activated
     local any = false
     for _, v in pairs(cM.events) do
         if v.settings.active == true then
